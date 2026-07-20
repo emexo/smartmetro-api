@@ -2,6 +2,7 @@ package com.smartmetro.service;
 
 import com.smartmetro.entity.User;
 import com.smartmetro.exception.UserNotFoundException;
+import com.smartmetro.model.UserRequest;
 import com.smartmetro.model.UserTO;
 import com.smartmetro.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -48,6 +49,28 @@ public class UserServiceImpl implements UserService {
        log.info("Returning the list of users from UserServiceImpl.getAllUsers");
        return userTOS;
 
+    }
+
+    @Override
+    public int save(UserRequest userRequest) throws UserNotFoundException {
+        log.info("Inside the UserServiceImpl..save, userRequest:{}", userRequest);
+
+        User user = new User();
+        if(userRequest.getName() != null){
+            user.setName(userRequest.getName());
+        }
+        if(userRequest.getEmail() != null){
+            user.setEmail(userRequest.getEmail() );
+        }
+
+       User savedUser = userRepository.save(user);
+
+        if(savedUser==null){
+            log.error("User details are not saved");
+            throw new UserNotFoundException("User details are not saved");
+        }
+
+        return savedUser.getUserId();
     }
 
 }
