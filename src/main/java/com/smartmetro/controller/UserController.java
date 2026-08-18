@@ -26,18 +26,9 @@ public class UserController {
 
     // http://localhost:8080/api/v1/users GET
     @GetMapping
-    public ResponseEntity<List<UserTO>> getAllUsers(){
+    public ResponseEntity<List<UserTO>> getAllUsers() throws UserNotFoundException{
         log.info("Inside the UserController.getAllUsers");
-        List<UserTO> userTOS = null;
-        try{
-            userTOS = userService.getAllUsers();
-        } catch (UserNotFoundException ex){
-            log.error("User not found exception occurred in UserController.getAllUsers: {}", ex);
-            return ResponseEntity.notFound().build();
-        } catch (Exception ex1){
-            log.error("Exception while retrieving users in UserController.getAllUsers: {}", ex1);
-            return ResponseEntity.internalServerError().build();
-        }
+        List<UserTO> userTOS = userService.getAllUsers();
 
         log.info("Successfully retrieved the list of users from UserController.getAllUsers, total users found: {}", userTOS.size());
         log.info("Returning the list of users from UserController.getAllUsers");
@@ -46,20 +37,12 @@ public class UserController {
 
     // http://localhost:8080/api/v1/users POST
     @PostMapping
-    public ResponseEntity<Integer> save(@RequestBody UserRequest userRequest){
+    public ResponseEntity<Integer> save(@RequestBody UserRequest userRequest) throws UserNotFoundException{
         log.info("Inside the UserController.save, userRequest:{}", userRequest);
 
-        int userId = 0;
-        try{
-            userId = userService.save(userRequest);
-            log.info("Saved User, userTO:{}", userId);
-        } catch (UserNotFoundException ex){
-            log.error("User not found exception occurred in UserController.getAllUsers: {}", ex);
-            return ResponseEntity.notFound().build();
-        } catch (Exception ex1){
-            log.error("Exception while retrieving users in UserController.getAllUsers: {}", ex1);
-            return ResponseEntity.internalServerError().build();
-        }
+        int userId = userService.save(userRequest);
+        log.info("Saved User, userTO:{}", userId);
+
         log.info("End of UserController.save");
         return ResponseEntity.status(HttpStatus.CREATED).body(userId);
     }

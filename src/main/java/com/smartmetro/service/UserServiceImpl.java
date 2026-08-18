@@ -6,6 +6,7 @@ import com.smartmetro.model.UserRequest;
 import com.smartmetro.model.UserTO;
 import com.smartmetro.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
@@ -29,6 +30,7 @@ public class UserServiceImpl implements UserService {
      * @return a list of UserTO objects representing all users in the database
      * @throws UserNotFoundException if no users are found in the database
      */
+    @PreAuthorize("hasRole('ADMIN')")
     public List<UserTO> getAllUsers() throws UserNotFoundException {
         log.info("Inside the UserServiceImpl.getAllUsers");
 
