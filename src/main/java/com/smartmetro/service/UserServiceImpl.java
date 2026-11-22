@@ -6,12 +6,14 @@ import com.smartmetro.model.UserRequest;
 import com.smartmetro.model.UserTO;
 import com.smartmetro.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.annotation.Profile;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import java.util.List;
 
+@Profile("sit")
 @Slf4j
 @Service
 public class UserServiceImpl implements UserService {

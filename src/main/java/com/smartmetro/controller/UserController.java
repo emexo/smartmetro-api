@@ -5,6 +5,7 @@ import com.smartmetro.exception.UserNotFoundException;
 import com.smartmetro.model.UserRequest;
 import com.smartmetro.model.UserTO;
 import com.smartmetro.service.UserService;
+import jakarta.persistence.criteria.CriteriaBuilder;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
@@ -34,6 +35,8 @@ public class UserController {
         log.info("Returning the list of users from UserController.getAllUsers");
         return ResponseEntity.ok(userTOS);
     }
+
+
 
     // http://localhost:8080/api/v1/users POST
     @PostMapping
