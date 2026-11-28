@@ -1,17 +1,21 @@
 package com.smartmetro.model;
 
-public record UserTO(
-     int userId,
+import lombok.Getter;
+import lombok.Setter;
 
-     String name,
+import java.util.List;
 
-     String email,
+@Getter
+@Setter
+public class UserTO {
+    int userId;
+    String name;
+    String email;
+    String phone;
+    String password;
+    String role;
+    String createdAt;
+    List<MetroCardTO> metroCardTOList;
+}
 
-     String phone,
-
-     String password,
-
-     String role,
-
-     String createdAt){}
 

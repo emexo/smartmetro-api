@@ -1,7 +1,9 @@
 package com.smartmetro.service;
 
+import com.smartmetro.entity.MetroCard;
 import com.smartmetro.entity.User;
 import com.smartmetro.exception.UserNotFoundException;
+import com.smartmetro.model.MetroCardTO;
 import com.smartmetro.model.UserRequest;
 import com.smartmetro.model.UserTO;
 import com.smartmetro.repository.UserRepository;
@@ -11,13 +13,13 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
-@Profile("sit")
 @Slf4j
 @Service
 public class UserServiceImpl implements UserService {
-    // Implement the methods defined in the UserService interface
 
     private UserRepository userRepository;
 
@@ -26,55 +28,41 @@ public class UserServiceImpl implements UserService {
     }
 
 
-    /**
-     * Retrieves all users from the database and converts them to UserTO objects.
-     *
-     * @return a list of UserTO objects representing all users in the database
-     * @throws UserNotFoundException if no users are found in the database
-     */
-    @PreAuthorize("hasRole('ADMIN')")
-    public List<UserTO> getAllUsers() throws UserNotFoundException {
-        log.info("Inside the UserServiceImpl.getAllUsers");
-
-       List<User> users = userRepository.findAll();
-
-       if(CollectionUtils.isEmpty(users)) {
-           log.error("No users found in the database");
-           throw new UserNotFoundException("No users found in the database");
-       }
-
-     List<UserTO> userTOS = users.stream().map(user->{
-           UserTO userTO = new UserTO(user.getUserId(), user.getName(), user.getEmail(), user.getPhone(), user.getPassword(), user.getRole(), user.getCreatedAt());
-           return userTO;
-       }).toList();
-
-       log.info("Successfully retrieved the list of users from UserServiceImpl.getAllUsers, total users found: {}", userTOS.size());
-
-       log.info("Returning the list of users from UserServiceImpl.getAllUsers");
-       return userTOS;
-
-    }
-
     @Override
-    public int save(UserRequest userRequest) throws UserNotFoundException {
-        log.info("Inside the UserServiceImpl..save, userRequest:{}", userRequest);
+    public List<UserTO> findAll() throws UserNotFoundException {
+        log.info("Inside the UserServiceImpl.findAll");
+        List<User> users = userRepository.findAll();
 
-        User user = new User();
-        if(userRequest.getName() != null){
-            user.setName(userRequest.getName());
-        }
-        if(userRequest.getEmail() != null){
-            user.setEmail(userRequest.getEmail() );
+        if(CollectionUtils.isEmpty(users)){
+            log.error("User not found");
+            throw new UserNotFoundException("User not found");
         }
 
-       User savedUser = userRepository.save(user);
+        List<UserTO> userTOS = users.stream().map(user -> {
+            UserTO userTO = new UserTO();
+            userTO.setUserId(user.getUserId());
+            userTO.setName(user.getName());
+            userTO.setRole(user.getRole());
+            userTO.setEmail(user.getEmail());
+            userTO.setPhone(user.getPhone());
 
-        if(savedUser==null){
-            log.error("User details are not saved");
-            throw new UserNotFoundException("User details are not saved");
-        }
+            Set<MetroCard> metroCards = user.getMetroCards();
+            if(!CollectionUtils.isEmpty(metroCards)) {
+                List<MetroCardTO> metroCardTOS = metroCards.stream().map(metroCard -> {
+                    MetroCardTO metroCardTO = new MetroCardTO();
+                    metroCardTO.setCardNumber(metroCard.getCardNumber());
+                    metroCardTO.setCardId(metroCard.getCardId());
+                    metroCardTO.setBalance(metroCard.getBalance());
+                    metroCardTO.setStatus(metroCard.getStatus());
+                    return metroCardTO;
+                }).toList();
 
-        return savedUser.getUserId();
+                userTO.setMetroCardTOList(metroCardTOS);
+            }
+            return userTO;
+        }).toList();
+
+        log.info("End of UserServiceImpl.findAll");
+        return userTOS;
     }
-
 }

@@ -1,9 +1,13 @@
 package com.smartmetro.entity;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.sql.Date;
 
+@Getter
+@Setter
 @Entity
 @Table(name = "metro_card")
 public class MetroCard {
